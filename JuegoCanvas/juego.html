@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego</title>
+    <style>
+        #fondo {            
+            position: absolute;
+            top: -10px;
+            left: -5px;
+            width: 100.3%;
+            height: 101.1%;
+            object-fit: cover;
+            z-index: -99;
+        }
+
+        .muerte {
+            display: none;
+            position: absolute; 
+            top: -10px;
+            left: -5px;         
+            background-image: url(./images/muerte.jpg);
+            width: 200%;
+            height: 200%;            
+            object-fit: fill;
+            z-index: 5;
+        }
+
+        body {            
+            overflow: hidden;            
+        }
+
+        .h4 {
+            text-align: right;
+        }
+
+        h4 {
+            display: inline-block;
+            flex-direction: column;
+            border-radius: 30px;
+            background-color: black;
+            color: white;
+        }
+
+        #nave {
+            position: absolute;
+            top: 0px;
+            left: 55px;
+            transform: rotate(-90deg);
+
+        }
+
+        .roca {
+            position: absolute;
+            width: 61px;
+            height: 55px;
+            background: url(./images/naves.png);
+            background-repeat: no-repeat;
+            background-position: 0px -245px;
+            right: -65px;
+        }
+
+        .roquita {
+            position: absolute;
+            width: 33px;
+            height: 33px;
+            background: url(./images/naves.png);
+            background-repeat: no-repeat;
+            background-position: -63px -261px;
+            right: -65px;
+        }
+
+        .proyectil {
+            position: absolute;
+            width: 7px;
+            height: 15px;
+            background: url(./images/naves.png);
+            background-repeat: no-repeat;
+            background-position: -41px -133px;
+            transform: rotate(90deg);
+            z-index: -5;
+        }
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function (ev) {
+            let nave = document.querySelector("#nave");
+            let speedNave = 10;
+            let container = document.querySelector("#container");
+
+
+            function detectarColisionNave(objeto) {
+                let naveRect = nave.getBoundingClientRect();
+                let objetoRect = objeto.getBoundingClientRect();
+
+                if (naveRect.top < objetoRect.bottom &&
+                    naveRect.bottom > objetoRect.top &&
+                    naveRect.left < objetoRect.right &&
+                    naveRect.right > objetoRect.left) {
+
+                    console.log("¡Colisión detectada!");
+                    let muerte = document.querySelector(".muerte");                                       
+                    muerte.style.display = 'block';
+
+
+                }
+            }
+
+            function roca() {
+                container;
+                let roca = document.createElement("img");
+                container.append(roca);
+
+                let topposroca = parseInt(window.getComputedStyle(roca).getPropertyValue("top"));
+
+                roca.classList.add("roca");
+                let min = 0;
+                let max = 850;
+                let random = Math.floor(Math.random() * (max - min + 1)) + min;
+                topposroca = random;
+                roca.style.top = topposroca + 'px';
+
+                moverRoca(roca);
+            }
+
+            function moverRoca(roca) {
+                let rightposroca = parseInt(window.getComputedStyle(roca).getPropertyValue("right"));
+                let initialPosition = -65;
+                let speedRoca = 8;
+
+                if (rightposroca === initialPosition) {
+                    intervalIdRoca = setInterval(() => {
+                        rightposroca += speedRoca;
+                        roca.style.right = rightposroca + 'px';
+                        detectarColisionNave(roca);                        
+                        if (rightposroca >= 1800) {
+                            roca.remove();
+                        }
+                    }, 100);
+                }
+            }
+
+            function roquita() {
+                container;
+                let roquita = document.createElement("img");
+                container.append(roquita);
+
+                let topposroquita = parseInt(window.getComputedStyle(roquita).getPropertyValue("top"));
+
+                roquita.classList.add("roquita");
+                let min = 0;
+                let max = 850;
+                let random = Math.floor(Math.random() * (max - min + 1)) + min;
+                topposroquita = random;
+                roquita.style.top = topposroquita + 'px';
+
+                moverRoquita(roquita);
+            }
+
+            function moverRoquita(roquita) {
+                let rightposroquita = parseInt(window.getComputedStyle(roquita).getPropertyValue("right"));
+                let initialPosition = -65;
+                let speedroquita = 8;
+
+                if (rightposroquita === initialPosition) {
+                    intervalIdRoquita = setInterval(() => {
+                        rightposroquita += speedroquita;
+                        roquita.style.right = rightposroquita + 'px';
+                        detectarColisionNave(roquita);                        
+                        if (rightposroquita >= 1800) {
+                            roquita.remove();
+                        }
+                    }, 100);
+                }
+            }
+
+
+
+            let min = 3000;
+            let max = 10000;
+            let random = Math.floor(Math.random() * (max - min + 1)) + min;
+
+
+
+            setInterval(roca, random)
+            setInterval(roquita, random)
+
+
+
+            let topposnave = parseInt(window.getComputedStyle(nave).getPropertyValue("top"));
+            let proyectil = document.createElement("img");
+            let topposproyectil = parseInt(window.getComputedStyle(proyectil).getPropertyValue("top"));
+            let leftposproyectil = parseInt(window.getComputedStyle(proyectil).getPropertyValue("left"));
+            let initialPosition = 55;
+            let speedProyectil = 18;
+
+            window.addEventListener('keypress', (e) => {
+
+                topposnave = parseInt(window.getComputedStyle(nave).getPropertyValue("top"));
+
+                switch (e.key) {
+                    case 'w':
+                        if (Math.sign(topposnave) == 1) {
+                            nave.style.top = (topposnave - speedNave) + 'px';
+                        }
+                        break;
+                    case 's':
+                        if ((topposnave) <= 750) {
+                            nave.style.top = (topposnave + speedNave) + 'px';
+                        }
+                        break;
+                    case ' ':
+                        if (e.key == ' ') {
+                            if (!document.querySelector(".proyectil")) {
+                                proyectil = document.createElement("img");
+                                container.append(proyectil);
+                                proyectil.classList.add("proyectil");
+                                topposproyectil = topposnave + 75;
+                                proyectil.style.top = topposproyectil + 'px';
+                                leftposproyectil = 0;
+
+                                intervalIdmoverprotectil = setInterval(() => {
+                                    leftposproyectil += speedProyectil;
+                                    console.log(leftposproyectil);
+                                    proyectil.style.left = leftposproyectil + 'px';
+                                    if (leftposproyectil >= 1800) {
+                                        proyectil.remove();
+                                        clearInterval(intervalIdmoverprotectil);
+                                    }
+
+                                }, 80);
+                            }
+                        }
+                        break;
+                }
+
+            });
+
+        });
+
+    </script>
+</head>
+
+<body>
+    <img class="muerte">
+    <div class="h4">
+        <h4>
+            Subir nave, pulsa: "W"
+        </h4>
+    </div>
+    <div class="h4">
+        <h4>
+            Bajar nave, pulsa: "S"
+        </h4>
+    </div>
+    <div class="h4">
+        <h4>
+            Disparar "Barra espaciadora"
+        </h4>
+    </div>
+    <div id="container">
+        <img id="nave" src="./images/nave.png">
+        <video id="fondo" autoplay loop muted>
+            <source id="nubes" src="./video/nubess.mp4">
+        </video>
+        
+    </div>
+</body>
+
+</html>
